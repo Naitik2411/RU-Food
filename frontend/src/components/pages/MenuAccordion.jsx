@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import mealTypeTabs from "@/store/mealTypeTabs";
 import { useLocationStore } from "@/store/locationStore";
 import { Utensils, Coffee } from "lucide-react";
-import useFavoriteStore from "@/store/useFavoriteStore";
+import useFavoriteStore from "@/store/favoriteStore";
 
 const MenuAccordion = () => {
   const [menuArray, setMenuArray] = useState([]);

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { db, auth, doc, setDoc, getDoc, updateDoc } from "@/firebase";
+import { db, auth, doc, setDoc, getDoc, updateDoc } from "@/firebase/firebaseConfig";
 
 export const useFavoriteStore = create((set, get) => ({
     favorites : [],
