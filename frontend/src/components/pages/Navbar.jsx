@@ -51,7 +51,6 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Render Login Modal as a separate component */}
       {showLoginModal && <LoginModal onClose={toggleLoginModal} />}
     </>
   );

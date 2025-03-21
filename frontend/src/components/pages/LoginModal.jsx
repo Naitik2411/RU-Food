@@ -1,7 +1,9 @@
 import React from "react";
 import { X } from "lucide-react";
+import useAuthStore from "@/store/authStore";
 
 const LoginModal = ({ onClose }) => {
+    const {user, signIn, signOut} = useAuthStore();
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative animate-fadeIn">
@@ -21,10 +23,7 @@ const LoginModal = ({ onClose }) => {
           {/* Google Sign In Button */}
           <button
             className="flex items-center justify-center w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-700 font-medium hover:bg-gray-50 transition-colors duration-300 mb-4 shadow-sm"
-            onClick={() => {
-              // Add Google Sign-in logic here
-              console.log("Google sign-in clicked");
-            }}
+            onClick={() => signIn()}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path
