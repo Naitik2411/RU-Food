@@ -12,7 +12,7 @@ import { useLocationStore } from "@/store/locationStore";
 import { Utensils, Coffee } from "lucide-react";
 import useFavoriteStore from "@/store/favoriteStore";
 
-const MenuAccordion = () => {
+const MenuAccordion = ({ searchQuery = "" }) => {
   const [menuArray, setMenuArray] = useState([]);
   const { selectedDate } = selectDate();
   const { selectedMealType } = mealTypeTabs();
@@ -32,6 +32,7 @@ const MenuAccordion = () => {
         let req = await fetch(
           `http://localhost:3000/menus/${location}/${mealParam}/${formattedDate}`
         );
+        
         let menus = await req.json();
         
         if (menus?.menus?.menu) {
@@ -53,6 +54,11 @@ const MenuAccordion = () => {
   
   // Load favorites from localStorage on component mount
 
+  const filterItem = (item) => {
+    if (!searchQuery) return true;
+    return item.itemName.toLowerCase().includes(searchQuery.toLowerCase());
+  };
+
   const accordionItems =
     menuArray.length > 0 ? (
       menuArray.map((locationData, index) => (
@@ -68,49 +74,53 @@ const MenuAccordion = () => {
           </div>
           <div className="w-full px-4">
             <Accordion type="multiple" collapsible className="w-full">
-              {locationData.menu.map((subcategory, subIndex) => (
-                <AccordionItem
-                  key={subIndex}
-                  value={`item-${index}-${subIndex}`}
-                  className="border-b border-gray-500/10 last:border-b-0"
-                >
-                  <AccordionTrigger
-                     className="px-4 py-3 text-gray-300 hover:text-gray-200 font-medium text-lg transition-colors shadow-sm hover:shadow-md"
+              {locationData.menu.map((subcategory, subIndex) => {
+                const filteredItems = subcategory.items.filter(filterItem);
+                if (filteredItems.length === 0) return null;
+                return (
+                  <AccordionItem
+                    key={subIndex}
+                    value={`item-${index}-${subIndex}`}
+                    className="border-b border-gray-500/10 last:border-b-0"
                   >
-                    {subcategory.subcategoryName}
-                  </AccordionTrigger>
-                  <AccordionContent className="overflow-hidden transition-all duration-300 px-6 text-gray-100/90 shadow-inner bg-gray-900/40">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 py-4">
-                      {subcategory.items.map((item, itemIndex) => (
-                        <div
-                          key={itemIndex}
-                          className="bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition-all duration-200 border border-gray-700 relative group cursor-pointer"
-                          onClick={() => toggleFavorites(item, locationData.location)}
-                        >
-                          <div className="flex justify-between items-start">
-                            <h4 className="font-medium text-gray-200">{item.itemName}</h4>
-                            <Coffee 
-                              className={`w-5 h-5 transition-all duration-300 ${
-                                isFavorite(item, locationData.location) 
-                                  ? "fill-amber-900 text-amber-900" 
-                                  : "text-gray-400 group-hover:text-gray-200"
-                              }`} 
-                            />
-                          </div>
-                          {item.description && (
-                            <p className="text-sm text-gray-400 mt-2">{item.description}</p>
-                          )}
-                          {item.nutrition && (
-                            <div className="mt-2 text-xs text-gray-500">
-                              {item.nutrition}
+                    <AccordionTrigger
+                      className="px-4 py-3 text-gray-300 hover:text-gray-200 font-medium text-lg transition-colors shadow-sm hover:shadow-md"
+                    >
+                      {subcategory.subcategoryName}
+                    </AccordionTrigger>
+                    <AccordionContent className="overflow-hidden transition-all duration-300 px-6 text-gray-100/90 shadow-inner bg-gray-900/40">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 py-4">
+                        {filteredItems.map((item, itemIndex) => (
+                          <div
+                            key={itemIndex}
+                            className="bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition-all duration-200 border border-gray-700 relative group cursor-pointer"
+                          >
+                            <div className="flex justify-between items-start">
+                              <h4 className="font-medium text-gray-200">{item.itemName}</h4>
+                              <Coffee
+                                className={`w-5 h-5 transition-all duration-10 ${
+                                  isFavorite(item, locationData.location)
+                                    ? "fill-amber-900 text-amber-900"
+                                    : "text-gray-400 group-hover:text-gray-200"
+                                }`}
+                                onClick={() => toggleFavorites(item, locationData.location)}
+                              />
                             </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+                            {item.description && (
+                              <p className="text-sm text-gray-400 mt-2">{item.description}</p>
+                            )}
+                            {item.nutrition && (
+                              <div className="mt-2 text-xs text-gray-500">
+                                {item.nutrition}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                );
+              })}
             </Accordion>
           </div>
         </div>

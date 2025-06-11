@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import MealTabs from "./MealTabs";
 import { DatePicker } from "./DatePicker";
 import MenuAccordion from "./MenuAccordion";
@@ -7,10 +7,11 @@ import Navbar from "./Navbar";
 import { Calendar, Coffee } from "lucide-react";
 
 const Manager = () => {
+  const [searchQuery, setSearchQuery] = useState("");
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
       {/* Navbar */}
-      <Navbar />
+      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       
       {/* Main Content */}
       <main className="py-6">
@@ -48,7 +49,7 @@ const Manager = () => {
           
           {/* Menu Accordion */}
           <div className="pb-16">
-            <MenuAccordion />
+            <MenuAccordion searchQuery={searchQuery} />
           </div>
         </div>
       </main>
