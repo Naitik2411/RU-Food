@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -11,6 +11,7 @@ import mealTypeTabs from "@/store/mealTypeTabs";
 import { useLocationStore } from "@/store/locationStore";
 import { Utensils, Coffee } from "lucide-react";
 import useFavoriteStore from "@/store/favoriteStore";
+import { useMenuCache } from "@/store/menuCacheStore";
 
 const MenuAccordion = ({ searchQuery = "" }) => {
   const [menuArray, setMenuArray] = useState([]);
@@ -18,8 +19,18 @@ const MenuAccordion = ({ searchQuery = "" }) => {
   const { selectedMealType } = mealTypeTabs();
   const { selectedLocations } = useLocationStore();
   const {  toggleFavorites, isFavorite } = useFavoriteStore();
+  const { menuCache, setMenuCache } = useMenuCache();
+  const debounceRef = useRef();
+  
+  // Create a cache key based on selected filters
+  const cacheKey = `${selectedLocations.join(",")}|${selectedMealType}|${selectedDate}`;
   
   const fetchMenus = useCallback(async () => {
+    // Check cache first
+    if (menuCache[cacheKey]) {
+      setMenuArray(menuCache[cacheKey]);
+      return;
+    }
     try {
       let allMenus = [];
       
@@ -41,15 +52,20 @@ const MenuAccordion = ({ searchQuery = "" }) => {
       }
       
       setMenuArray(allMenus);
+      setMenuCache(cacheKey, allMenus);
     } catch (err) {
       console.error("Error fetching menus:", err);
     }
-  }, [selectedDate, selectedMealType, selectedLocations]);
+  }, [selectedDate, selectedMealType, selectedLocations, menuCache, setMenuCache, cacheKey]);
   
+  // Debounce fetchMenus
   useEffect(() => {
-    if (selectedDate && selectedLocations.length >= 0) {
+    if (!selectedDate || selectedLocations.length < 0) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
       fetchMenus();
-    }
+    }, 400);
+    return () => clearTimeout(debounceRef.current);
   }, [fetchMenus, selectedDate, selectedLocations]);
   
   // Load favorites from localStorage on component mount
