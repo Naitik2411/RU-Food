@@ -41,7 +41,7 @@ const MenuAccordion = ({ searchQuery = "" }) => {
         );
         
         let req = await fetch(
-          `http://localhost:3000/menus/${location}/${mealParam}/${formattedDate}`
+          `https://ru-food-backend.onrender.com/menus/${location}/${mealParam}/${formattedDate}`
         );
         
         let menus = await req.json();
