@@ -17,9 +17,9 @@ app.listen(PORT, () => {
 app.use("/menus", menuRouter);
 
 //connect to database
-const URI = process.env.MONGODB_URL
+// const URI = process.env.MONGODB_URL
 
-mongoose.connect("mongodb+srv://RU-Food:Naitik2411%23@cluster0.d82k6.mongodb.net/RU-Food?retryWrites=true&w=majority&appName=Cluster0", {
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     
