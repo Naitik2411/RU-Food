@@ -15,13 +15,13 @@ export function DatePicker() {
   const {selectedDate, setSelectedDate} = selectDate();
   
   return (
-    <div>
+    <div className="flex justify-center items-center w-full">
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant={"outline"}
             className={cn(
-              "w-[240px] justify-start text-left font-normal bg-gray-900 border-gray-500/30 hover:bg-gray-800 hover:border-gray-500/50 text-gray-200",
+              "w-[240px] justify-center text-center font-normal bg-gray-900 border-gray-500/30 hover:bg-gray-800 hover:border-gray-500/50 text-gray-200",
               !selectedDate && "text-gray-400"
             )}
           >
@@ -29,7 +29,7 @@ export function DatePicker() {
             {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-gray-900 border border-gray-500/30" align="start">
+        <PopoverContent className="w-auto p-0 bg-gray-900 border border-gray-500/30 flex justify-center" align="center">
           <Calendar
             mode="single"
             selected={selectedDate}
