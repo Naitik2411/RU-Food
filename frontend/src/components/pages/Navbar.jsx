@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Calendar, ChevronDown } from "lucide-react";
 import LoginModal from "./LoginModal";
+import useAuthStore from "@/store/authStore";
+import useFavoriteStore from "@/store/favoriteStore";
+import { Link } from "react-router-dom";
 
 const Navbar = ({ searchQuery, setSearchQuery }) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const searchInputRef = useRef(null);
+  const { user, signOut } = useAuthStore();
+  const { favorites } = useFavoriteStore();
 
   const toggleLoginModal = () => {
     setShowLoginModal(!showLoginModal);
@@ -81,13 +86,38 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
               style={{ width: "28px", height: "28px" }}
             ></lord-icon>
           </div>
-          <button
-            onClick={toggleLoginModal}
-            className="text-lg font-medium text-gray-100 hover:text-gray-300 transition-colors duration-300 relative group"
-          >
-            Login
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-500 to-gray-400 group-hover:w-full transition-all duration-300"></span>
-          </button>
+          
+          {user ? (
+            <>
+              <Link
+                to="/favorites"
+                className="text-lg font-medium text-gray-100 hover:text-gray-300 transition-colors duration-300 relative group flex items-center gap-2"
+              >
+                Favorites
+                {favorites.length > 0 && (
+                  <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    {favorites.length}
+                  </span>
+                )}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-500 to-gray-400 group-hover:w-full transition-all duration-300"></span>
+              </Link>
+              <button
+                onClick={signOut}
+                className="text-lg font-medium text-gray-100 hover:text-gray-300 transition-colors duration-300 relative group"
+              >
+                Logout
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-500 to-gray-400 group-hover:w-full transition-all duration-300"></span>
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={toggleLoginModal}
+              className="text-lg font-medium text-gray-100 hover:text-gray-300 transition-colors duration-300 relative group"
+            >
+              Login
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-gray-500 to-gray-400 group-hover:w-full transition-all duration-300"></span>
+            </button>
+          )}
           <a
             href="#"
             className="text-lg font-medium text-gray-100 hover:text-gray-300 transition-colors duration-300 relative group"

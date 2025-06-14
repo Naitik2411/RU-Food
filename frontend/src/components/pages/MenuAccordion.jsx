@@ -12,14 +12,19 @@ import { useLocationStore } from "@/store/locationStore";
 import { Utensils, Coffee } from "lucide-react";
 import useFavoriteStore from "@/store/favoriteStore";
 import { useMenuCache } from "@/store/menuCacheStore";
+import useAuthStore from "@/store/authStore";
+import { useNotificationStore } from "@/store/notificationStore";
+import Notification from "@/components/ui/notification";
 
 const MenuAccordion = ({ searchQuery = "" }) => {
   const [menuArray, setMenuArray] = useState([]);
   const { selectedDate } = selectDate();
   const { selectedMealType } = mealTypeTabs();
   const { selectedLocations } = useLocationStore();
-  const {  toggleFavorites, isFavorite } = useFavoriteStore();
+  const { toggleFavorites, isFavorite } = useFavoriteStore();
   const { menuCache, setMenuCache } = useMenuCache();
+  const { user } = useAuthStore();
+  const { notification, showNotification, hideNotification } = useNotificationStore();
   const debounceRef = useRef();
   
   // Create a cache key based on selected filters
@@ -75,6 +80,14 @@ const MenuAccordion = ({ searchQuery = "" }) => {
     return item.itemName.toLowerCase().includes(searchQuery.toLowerCase());
   };
 
+  const handleFavoriteClick = (item, location) => {
+    if (!user) {
+      showNotification("Please log in to add favorites", "warning");
+      return;
+    }
+    toggleFavorites(item, location);
+  };
+
   const accordionItems =
     menuArray.length > 0 ? (
       menuArray.map((locationData, index) => (
@@ -119,7 +132,7 @@ const MenuAccordion = ({ searchQuery = "" }) => {
                                     ? "fill-amber-900 text-amber-900"
                                     : "text-gray-400 group-hover:text-gray-200"
                                 }`}
-                                onClick={() => toggleFavorites(item, locationData.location)}
+                                onClick={() => handleFavoriteClick(item, locationData.location)}
                               />
                             </div>
                             {item.description && (
@@ -149,9 +162,18 @@ const MenuAccordion = ({ searchQuery = "" }) => {
     );
   
   return (
-    <div className="grid gap-8 sm:grid-cols-1 lg:grid-cols-2 px-6 md:px-10 max-w-7xl mx-auto">
-      {accordionItems}
-    </div>
+    <>
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={hideNotification}
+        />
+      )}
+      <div className="grid gap-8 sm:grid-cols-1 lg:grid-cols-2 px-6 md:px-10 max-w-7xl mx-auto">
+        {accordionItems}
+      </div>
+    </>
   );
 };
 

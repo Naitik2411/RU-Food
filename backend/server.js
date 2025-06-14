@@ -6,22 +6,30 @@ import cors from 'cors';
 
 dotenv.config();
 const app = express();
-const PORT =  process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
 
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+// Health check route
+app.get('/', (req, res) => {
+  res.send('API is running');
 });
+
 app.use("/menus", menuRouter);
 
-//connect to database
-// const URI = process.env.MONGODB_URL
-
+// Connect to database, then start server
 mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    
-}).then(() => console.log('Connected to MongoDB'))
-.catch((err) => console.log(err));
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log('Connected to MongoDB');
+  app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
+  });
+})
+.catch((err) => {
+  console.log('Failed to connect to MongoDB:', err);
+  process.exit(1);
+});

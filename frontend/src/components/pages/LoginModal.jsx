@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { X } from "lucide-react";
 import useAuthStore from "@/store/authStore";
 
 const LoginModal = ({ onClose }) => {
     const {user, signIn, signOut} = useAuthStore();
+
+    // Close modal when user successfully logs in
+    useEffect(() => {
+        if (user) {
+            onClose();
+        }
+    }, [user, onClose]);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative animate-fadeIn">
